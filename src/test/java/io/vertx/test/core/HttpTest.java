@@ -3504,6 +3504,23 @@ public abstract class HttpTest extends HttpTestBase {
     await();
   }
 
+  @Test
+  public void testServerResponseCloseHandlerNotHoldingLock() throws Exception {
+    server.requestHandler(req -> {
+      req.response().closeHandler(v -> {
+        assertFalse(Thread.holdsLock(req.connection()));
+        testComplete();
+      });
+      req.response().setChunked(true).write("hello");
+    });
+    startServer();
+    client.getNow(DEFAULT_HTTP_PORT, DEFAULT_HTTP_HOST, "/somepath", resp -> {
+      assertEquals(200, resp.statusCode());
+      resp.request().connection().close();
+    });
+    await();
+  }
+
   private TestLoggerFactory testLogging() throws Exception {
     InternalLoggerFactory prev = InternalLoggerFactory.getDefaultFactory();
     TestLoggerFactory factory = new TestLoggerFactory();

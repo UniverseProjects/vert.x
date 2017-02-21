@@ -284,10 +284,10 @@ public abstract class WebSocketImplBase implements WebSocketBase {
     synchronized (conn) {
       cleanupHandlers();
       if (endHandler != null) {
-        endHandler.handle(null);
+        conn.getContext().runOnContext(endHandler);
       }
       if (closeHandler != null) {
-        closeHandler.handle(null);
+        conn.getContext().runOnContext(closeHandler);
       }
     }
   }

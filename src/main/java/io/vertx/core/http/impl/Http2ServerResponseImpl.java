@@ -132,7 +132,7 @@ public class Http2ServerResponseImpl implements HttpServerResponse {
       handleError(new ClosedChannelException());
     }
     if (closeHandler != null) {
-      closeHandler.handle(null);
+      stream.context.runOnContext(closeHandler);
     }
   }
 

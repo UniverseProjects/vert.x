@@ -549,7 +549,7 @@ public class HttpServerResponseImpl implements HttpServerResponse {
   void handleClosed() {
     synchronized (conn) {
       if (closeHandler != null) {
-        closeHandler.handle(null);
+        conn.getContext().runOnContext(closeHandler);
       }
     }
   }
